@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nutricraft/theme/app_theme.dart';
 
 class AchievementCard extends StatelessWidget {
   final String title;
@@ -54,7 +53,7 @@ class AchievementCard extends StatelessWidget {
                   Text(
                     description,
                     style: TextStyle(
-                      color: AppColors.charcoalGray.withOpacity(0.7),
+                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 14,
                     ),
                   ),

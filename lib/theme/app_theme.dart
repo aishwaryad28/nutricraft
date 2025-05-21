@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  // Color palette as specified
+  // Light theme colors
   static const softMint = Color(0xFFDFFFE0);
   static const pastelPeach = Color(0xFFFFD6C0);
   static const lightLavender = Color(0xFFE6D6FF);
@@ -12,7 +12,17 @@ class AppColors {
   static const pastelGreen = Color(0xFFCFFFCF);
   static const lightApricot = Color(0xFFFFE6B2);
   
-  // Additional colors
+  // Dark theme colors
+  static const darkBackground = Color(0xFF121212);
+  static const darkSurface = Color(0xFF1E1E1E);
+  static const darkPastelPeach = Color(0xFFFFB599);
+  static const darkLavender = Color(0xFFCCB3FF);
+  static const darkBlushPink = Color(0xFFFFBFBF);
+  static const darkSkyBlue = Color(0xFF99DDFF);
+  static const darkPastelGreen = Color(0xFFA3FFA3);
+  static const darkApricot = Color(0xFFFFD280);
+  
+  // Common colors
   static const white = Colors.white;
   static const black = Colors.black;
   static const transparent = Colors.transparent;
@@ -139,6 +149,140 @@ class AppTheme {
         backgroundColor: AppColors.white,
         selectedItemColor: AppColors.pastelPeach,
         unselectedItemColor: AppColors.charcoalGray.withOpacity(0.5),
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+        selectedLabelStyle: GoogleFonts.nunito(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: GoogleFonts.nunito(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+  
+  static ThemeData get darkTheme {
+    return ThemeData(
+      primaryColor: AppColors.darkPastelPeach,
+      scaffoldBackgroundColor: AppColors.darkBackground,
+      colorScheme: ColorScheme.dark(
+        primary: AppColors.darkPastelPeach,
+        secondary: AppColors.darkLavender,
+        background: AppColors.darkBackground,
+        surface: AppColors.darkSurface,
+        onPrimary: AppColors.white,
+        onSecondary: AppColors.white,
+        onBackground: AppColors.white,
+        onSurface: AppColors.white,
+        error: Colors.redAccent,
+        onError: AppColors.white,
+      ),
+      textTheme: GoogleFonts.nunitoTextTheme(
+        TextTheme(
+          displayLarge: TextStyle(color: AppColors.white),
+          displayMedium: TextStyle(color: AppColors.white),
+          displaySmall: TextStyle(color: AppColors.white),
+          headlineMedium: TextStyle(color: AppColors.white),
+          headlineSmall: TextStyle(color: AppColors.white),
+          titleLarge: TextStyle(color: AppColors.white),
+          bodyLarge: TextStyle(color: AppColors.white),
+          bodyMedium: TextStyle(color: AppColors.white),
+        ),
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: AppColors.darkBackground,
+        elevation: 0,
+        iconTheme: IconThemeData(color: AppColors.white),
+        titleTextStyle: GoogleFonts.nunito(
+          color: AppColors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      cardTheme: CardTheme(
+        color: AppColors.darkSurface,
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.darkPastelPeach,
+          foregroundColor: AppColors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          textStyle: GoogleFonts.nunito(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.darkPastelPeach,
+          side: BorderSide(color: AppColors.darkPastelPeach),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          textStyle: GoogleFonts.nunito(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.darkPastelPeach,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          textStyle: GoogleFonts.nunito(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.darkSurface,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppColors.darkPastelPeach, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.redAccent, width: 1),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.redAccent, width: 2),
+        ),
+        hintStyle: GoogleFonts.nunito(
+          color: AppColors.white.withOpacity(0.5),
+          fontSize: 16,
+        ),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: AppColors.darkSurface,
+        selectedItemColor: AppColors.darkPastelPeach,
+        unselectedItemColor: AppColors.white.withOpacity(0.5),
         type: BottomNavigationBarType.fixed,
         elevation: 8,
         selectedLabelStyle: GoogleFonts.nunito(

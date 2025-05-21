@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nutricraft/theme/app_theme.dart';
 import 'package:nutricraft/models/recipe.dart';
 
 class RecipeCard extends StatelessWidget {
@@ -19,11 +18,11 @@ class RecipeCard extends StatelessWidget {
       child: Container(
         width: 160,
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.charcoalGray.withOpacity(0.1),
+              color: Theme.of(context).shadowColor.withOpacity(0.1),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -69,7 +68,7 @@ class RecipeCard extends StatelessWidget {
                     Text(
                       recipe.tags.first,
                       style: TextStyle(
-                        color: AppColors.charcoalGray.withOpacity(0.7),
+                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                         fontSize: 12,
                       ),
                     ),
@@ -81,10 +80,10 @@ class RecipeCard extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.timer,
                             size: 14,
-                            color: AppColors.pastelPeach,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -97,10 +96,10 @@ class RecipeCard extends StatelessWidget {
                       ),
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.local_fire_department,
                             size: 14,
-                            color: AppColors.pastelPeach,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           const SizedBox(width: 4),
                           Text(

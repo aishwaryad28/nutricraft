@@ -60,7 +60,7 @@ class NutritionRing extends StatelessWidget {
           subtitle,
           style: TextStyle(
             fontSize: 12,
-            color: AppColors.charcoalGray.withOpacity(0.7),
+            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
           ),
         ),
       ],

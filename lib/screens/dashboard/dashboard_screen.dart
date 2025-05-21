@@ -7,6 +7,7 @@ import 'package:nutricraft/models/recipe.dart';
 import 'package:nutricraft/providers/recipe_provider.dart';
 import 'package:nutricraft/providers/nutrition_provider.dart';
 import 'package:nutricraft/widgets/achievement_card.dart';
+import 'package:nutricraft/providers/theme_provider.dart';
 import 'package:intl/intl.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -16,11 +17,26 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final recommendedRecipes = ref.watch(recommendedRecipesProvider);
     final nutritionData = ref.watch(nutritionProvider);
+    final themeMode = ref.watch(themeProvider);
     
     return Scaffold(
       appBar: AppBar(
         title: const Text('NutriCraft'),
         actions: [
+          // Theme toggle button
+          IconButton(
+            icon: Icon(
+              themeMode == ThemeMode.light 
+                  ? Icons.dark_mode_outlined
+                  : Icons.light_mode_outlined,
+            ),
+            onPressed: () {
+              ref.read(themeProvider.notifier).toggleTheme();
+            },
+            tooltip: themeMode == ThemeMode.light 
+                ? 'Switch to dark mode' 
+                : 'Switch to light mode',
+          ),
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
             onPressed: () {
@@ -45,7 +61,7 @@ class DashboardScreen extends ConsumerWidget {
               Text(
                 'Today is ${DateFormat('EEEE, MMMM d').format(DateTime.now())}',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.charcoalGray.withOpacity(0.7),
+                  color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.7),
                 ),
               ),
               const SizedBox(height: 24),
@@ -70,19 +86,25 @@ class DashboardScreen extends ConsumerWidget {
                           NutritionRing(
                             title: 'Protein',
                             value: nutritionData.proteinPercentage,
-                            color: AppColors.pastelPeach,
+                            color: themeMode == ThemeMode.light 
+                                ? AppColors.pastelPeach 
+                                : AppColors.darkPastelPeach,
                             subtitle: '${nutritionData.protein}g / ${nutritionData.proteinGoal}g',
                           ),
                           NutritionRing(
                             title: 'Carbs',
                             value: nutritionData.carbsPercentage,
-                            color: AppColors.lightLavender,
+                            color: themeMode == ThemeMode.light 
+                                ? AppColors.lightLavender 
+                                : AppColors.darkLavender,
                             subtitle: '${nutritionData.carbs}g / ${nutritionData.carbsGoal}g',
                           ),
                           NutritionRing(
                             title: 'Fats',
                             value: nutritionData.fatsPercentage,
-                            color: AppColors.skyBlue,
+                            color: themeMode == ThemeMode.light 
+                                ? AppColors.skyBlue 
+                                : AppColors.darkSkyBlue,
                             subtitle: '${nutritionData.fats}g / ${nutritionData.fatsGoal}g',
                           ),
                         ],
@@ -129,18 +151,22 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              const AchievementCard(
+              AchievementCard(
                 title: '3-Day Balanced Streak',
                 description: 'You\'ve maintained balanced nutrition for 3 days!',
                 icon: Icons.emoji_events,
-                color: AppColors.lightApricot,
+                color: themeMode == ThemeMode.light 
+                    ? AppColors.lightApricot 
+                    : AppColors.darkApricot,
               ),
               const SizedBox(height: 8),
-              const AchievementCard(
+              AchievementCard(
                 title: 'First Vegan Dish',
                 description: 'You\'ve tried your first vegan recipe!',
                 icon: Icons.eco,
-                color: AppColors.pastelGreen,
+                color: themeMode == ThemeMode.light 
+                    ? AppColors.pastelGreen 
+                    : AppColors.darkPastelGreen,
               ),
             ],
           ),

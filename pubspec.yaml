@@ -29,3 +29,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/app_icon.png
+    - assets/images/avocado_toast.jpg
+    - assets/images/yogurt_parfait.jpg
+    - assets/images/quinoa_salad.jpg
+    - assets/images/grilled_chicken.jpg
+    - assets/images/smoothie_bowl.jpg
+    - assets/images/lentil_soup.jpg
