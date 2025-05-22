@@ -22,10 +22,22 @@ class _FoodLogScreenState extends ConsumerState<FoodLogScreen> with SingleTicker
   late TabController _tabController;
   DateTime _selectedDate = DateTime.now();
   
+  // Scroll controller for infinite scrolling
+  final ScrollController _scrollController = ScrollController();
+  
+  // Pagination state
+  bool _isLoading = false;
+  bool _hasMoreLogs = true;
+  int _currentPage = 1;
+  final int _logsPerPage = 10;
+  
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    
+    // Add scroll listener for infinite scrolling
+    _scrollController.addListener(_scrollListener);
     
     // If quickAdd is true, show the add food dialog
     if (widget.quickAdd) {
@@ -38,7 +50,52 @@ class _FoodLogScreenState extends ConsumerState<FoodLogScreen> with SingleTicker
   @override
   void dispose() {
     _tabController.dispose();
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
     super.dispose();
+  }
+  
+  // Scroll listener for infinite scrolling
+  void _scrollListener() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.8 &&
+        !_isLoading &&
+        _hasMoreLogs) {
+      _loadMoreLogs();
+    }
+  }
+  
+  // Load more logs
+  Future<void> _loadMoreLogs() async {
+    if (_isLoading) return;
+    
+    setState(() {
+      _isLoading = true;
+    });
+    
+    // Simulate network delay
+    await Future.delayed(const Duration(seconds: 1));
+    
+    // In a real app, you would load more logs from a database or API
+    // For now, we'll just simulate it by checking if we have more logs
+    final foodLogs = ref.read(foodLogProvider);
+    
+    // Filter logs for the selected date and meal type
+    final filteredLogs = foodLogs.where((log) {
+      return log.dateTime.year == _selectedDate.year &&
+             log.dateTime.month == _selectedDate.month &&
+             log.dateTime.day == _selectedDate.day;
+    }).toList();
+    
+    // Check if we have more logs to load
+    final hasMore = filteredLogs.length > _currentPage * _logsPerPage;
+    
+    setState(() {
+      _isLoading = false;
+      _hasMoreLogs = hasMore;
+      if (hasMore) {
+        _currentPage++;
+      }
+    });
   }
   
   void _showAddFoodDialog() {
@@ -53,12 +110,18 @@ class _FoodLogScreenState extends ConsumerState<FoodLogScreen> with SingleTicker
   void _previousDay() {
     setState(() {
       _selectedDate = _selectedDate.subtract(const Duration(days: 1));
+      // Reset pagination when date changes
+      _currentPage = 1;
+      _hasMoreLogs = true;
     });
   }
   
   void _nextDay() {
     setState(() {
       _selectedDate = _selectedDate.add(const Duration(days: 1));
+      // Reset pagination when date changes
+      _currentPage = 1;
+      _hasMoreLogs = true;
     });
   }
   
@@ -173,11 +236,25 @@ class _FoodLogScreenState extends ConsumerState<FoodLogScreen> with SingleTicker
       );
     }
     
+    // Apply pagination to the logs
+    final paginatedLogs = logs.take(_currentPage * _logsPerPage).toList();
+    
     return ListView.builder(
+      controller: _scrollController, // Add scroll controller for infinite scrolling
       padding: const EdgeInsets.all(16.0),
-      itemCount: logs.length,
+      itemCount: paginatedLogs.length + (_isLoading && _hasMoreLogs ? 1 : 0),
       itemBuilder: (context, index) {
-        final log = logs[index];
+        // Show loading indicator at the end
+        if (index == paginatedLogs.length && _isLoading) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        
+        final log = paginatedLogs[index];
         return Card(
           margin: const EdgeInsets.only(bottom: 12.0),
           child: ListTile(
@@ -202,7 +279,31 @@ class _FoodLogScreenState extends ConsumerState<FoodLogScreen> with SingleTicker
                 IconButton(
                   icon: const Icon(Icons.more_vert),
                   onPressed: () {
-                    // TODO: Show options (edit, delete)
+                    // Show options (edit, delete)
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) => Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.edit),
+                            title: const Text('Edit'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              // TODO: Implement edit functionality
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.delete, color: Colors.red),
+                            title: const Text('Delete', style: TextStyle(color: Colors.red)),
+                            onTap: () {
+                              Navigator.pop(context);
+                              ref.read(foodLogProvider.notifier).deleteFoodLog(log.id);
+                            },
+                          ),
+                        ],
+                      ),
+                    );
                   },
                 ),
               ],

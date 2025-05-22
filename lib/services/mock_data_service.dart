@@ -1,7 +1,10 @@
 import 'package:nutricraft/models/food_log.dart';
 import 'package:nutricraft/models/recipe.dart';
+import 'dart:math';
 
 class MockDataService {
+  final Random _random = Random();
+  
   List<FoodLog> getMockFoodLogs() {
     final now = DateTime.now();
     final yesterday = now.subtract(const Duration(days: 1));
@@ -83,7 +86,7 @@ class MockDataService {
   }
   
   List<Recipe> getMockRecipes() {
-    return [
+    final baseRecipes = [
       Recipe(
         id: '1',
         name: 'Avocado Toast with Poached Egg',
@@ -281,5 +284,93 @@ class MockDataService {
         isFavorite: false,
       ),
     ];
+    
+    // Generate more recipes for testing
+    return [...baseRecipes, ...generateMoreMockRecipes(30)];
+  }
+  
+  // Generate additional mock recipes for infinite scrolling
+  List<Recipe> generateMoreMockRecipes(int count) {
+    final List<Recipe> recipes = [];
+    
+    final List<String> mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Dessert'];
+    final List<String> dietTypes = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Low-Carb', 'High-Protein', 'Keto', 'Paleo'];
+    final List<String> cuisines = ['Italian', 'Mexican', 'Asian', 'Mediterranean', 'Indian', 'American', 'French'];
+    
+    final List<String> breakfastNames = [
+      'Fluffy Pancakes', 'Breakfast Burrito', 'Veggie Omelette', 'Chia Pudding', 
+      'Breakfast Smoothie', 'Protein Waffles', 'Overnight Oats', 'Breakfast Sandwich',
+      'Acai Bowl', 'Breakfast Hash', 'French Toast', 'Breakfast Quesadilla'
+    ];
+    
+    final List<String> lunchNames = [
+      'Chicken Wrap', 'Tuna Salad', 'Veggie Burger', 'Falafel Bowl', 
+      'Pasta Salad', 'Grain Bowl', 'Stuffed Peppers', 'Chicken Caesar Salad',
+      'Mediterranean Plate', 'Sushi Bowl', 'Burrito Bowl', 'Poke Bowl'
+    ];
+    
+    final List<String> dinnerNames = [
+      'Baked Salmon', 'Vegetable Stir Fry', 'Chicken Curry', 'Beef Stew', 
+      'Mushroom Risotto', 'Eggplant Parmesan', 'Shrimp Scampi', 'Lentil Dahl',
+      'Roast Chicken', 'Beef Tacos', 'Vegetable Lasagna', 'Tofu Stir Fry'
+    ];
+    
+    for (int i = 0; i < count; i++) {
+      final mealType = mealTypes[_random.nextInt(mealTypes.length)];
+      final dietType = dietTypes[_random.nextInt(dietTypes.length)];
+      final cuisine = cuisines[_random.nextInt(cuisines.length)];
+      
+      String name;
+      if (mealType == 'Breakfast') {
+        name = breakfastNames[_random.nextInt(breakfastNames.length)];
+      } else if (mealType == 'Lunch') {
+        name = lunchNames[_random.nextInt(lunchNames.length)];
+      } else {
+        name = dinnerNames[_random.nextInt(dinnerNames.length)];
+      }
+      
+      // Add some variety to the names
+      name = '$cuisine $name';
+      if (_random.nextBool()) {
+        name = '$dietType $name';
+      }
+      
+      final cookingTime = 10 + _random.nextInt(50); // 10-60 minutes
+      final calories = 200 + _random.nextInt(400); // 200-600 calories
+      final protein = 5 + _random.nextInt(35); // 5-40g protein
+      final carbs = 10 + _random.nextInt(60); // 10-70g carbs
+      final fats = 5 + _random.nextInt(25); // 5-30g fats
+      
+      recipes.add(Recipe(
+        id: (7 + i).toString(), // Start IDs after the base recipes
+        name: name,
+        description: 'A delicious $dietType $cuisine $mealType recipe that is perfect for any day of the week.',
+        imageUrl: 'assets/images/recipe_placeholder.jpg', // Use placeholder image
+        ingredients: [
+          'Ingredient 1',
+          'Ingredient 2',
+          'Ingredient 3',
+          'Ingredient 4',
+          'Ingredient 5',
+        ],
+        instructions: [
+          'Step 1: Prepare the ingredients.',
+          'Step 2: Cook the main components.',
+          'Step 3: Combine everything together.',
+          'Step 4: Serve and enjoy!',
+        ],
+        cookingTime: cookingTime,
+        servings: 1 + _random.nextInt(3), // 1-4 servings
+        calories: calories,
+        protein: protein,
+        carbs: carbs,
+        fats: fats,
+        fiber: 2 + _random.nextInt(13), // 2-15g fiber
+        tags: [mealType, dietType, cuisine],
+        isFavorite: _random.nextInt(10) == 0, // 10% chance of being favorite
+      ));
+    }
+    
+    return recipes;
   }
 }

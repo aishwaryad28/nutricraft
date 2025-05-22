@@ -17,21 +17,80 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> with SingleTicker
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
   
+  // Scroll controller for infinite scrolling
+  final ScrollController _scrollController = ScrollController();
+  
+  // Pagination state
+  bool _isLoading = false;
+  bool _hasMoreRecipes = true;
+  int _currentPage = 1;
+  final int _recipesPerPage = 10;
+  
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    
+    // Add scroll listener for infinite scrolling
+    _scrollController.addListener(_scrollListener);
   }
   
   @override
   void dispose() {
     _tabController.dispose();
     _searchController.dispose();
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
     super.dispose();
   }
   
+  // Scroll listener for infinite scrolling
+  void _scrollListener() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.8 &&
+        !_isLoading &&
+        _hasMoreRecipes) {
+      _loadMoreRecipes();
+    }
+  }
+  
+  // Load more recipes
+  Future<void> _loadMoreRecipes() async {
+    if (_isLoading) return;
+    
+    setState(() {
+      _isLoading = true;
+    });
+    
+    // Simulate network delay
+    await Future.delayed(const Duration(seconds: 1));
+    
+    // Load more recipes
+    final success = await ref.read(allRecipesProvider.notifier).loadMoreRecipes(_currentPage, _recipesPerPage);
+    
+    setState(() {
+      _isLoading = false;
+      if (success) {
+        _currentPage++;
+      } else {
+        _hasMoreRecipes = false;
+      }
+    });
+  }
+  
+  // Reset pagination when filter changes
+  void _resetPagination() {
+    setState(() {
+      _currentPage = 1;
+      _hasMoreRecipes = true;
+    });
+    ref.read(allRecipesProvider.notifier).resetRecipes();
+    _loadMoreRecipes();
+  }
+  
   void _searchRecipes(String query) {
-    // TODO: Implement recipe search
+    // Reset pagination when search query changes
+    _resetPagination();
+    ref.read(allRecipesProvider.notifier).searchRecipes(query);
   }
   
   @override
@@ -120,7 +179,9 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> with SingleTicker
         label: Text(label),
         selected: label == 'All',
         onSelected: (selected) {
-          // TODO: Apply filter
+          // Apply filter and reset pagination
+          _resetPagination();
+          ref.read(allRecipesProvider.notifier).filterRecipesByTag(label == 'All' ? null : label);
         },
         backgroundColor: AppColors.white,
         selectedColor: AppColors.pastelPeach,
@@ -154,6 +215,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> with SingleTicker
     }
     
     return GridView.builder(
+      controller: _scrollController, // Add scroll controller for infinite scrolling
       padding: const EdgeInsets.all(16.0),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -161,8 +223,16 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> with SingleTicker
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
       ),
-      itemCount: recipes.length,
+      itemCount: recipes.length + (_isLoading && _tabController.index == 2 ? 1 : 0), // Add loading indicator if loading more
       itemBuilder: (context, index) {
+        // Show loading indicator at the end
+        if (index == recipes.length && _isLoading && _tabController.index == 2) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        
+        // Show recipe card
         return RecipeCard(
           recipe: recipes[index],
           onTap: () {
