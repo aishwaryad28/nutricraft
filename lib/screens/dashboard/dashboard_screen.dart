@@ -8,6 +8,8 @@ import 'package:nutricraft/providers/recipe_provider.dart';
 import 'package:nutricraft/providers/nutrition_provider.dart';
 import 'package:nutricraft/widgets/achievement_card.dart';
 import 'package:nutricraft/providers/theme_provider.dart';
+import 'package:nutricraft/providers/user_provider.dart';
+import 'package:nutricraft/screens/recipes/recipe_detail_screen.dart';
 import 'package:intl/intl.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -18,6 +20,7 @@ class DashboardScreen extends ConsumerWidget {
     final recommendedRecipes = ref.watch(recommendedRecipesProvider);
     final nutritionData = ref.watch(nutritionProvider);
     final themeMode = ref.watch(themeProvider);
+    final user = ref.watch(userProvider); // Watch the user provider directly
     
     return Scaffold(
       appBar: AppBar(
@@ -51,9 +54,9 @@ class DashboardScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Greeting section
+              // Greeting section - Now using user.name directly
               Text(
-                'Hello, ${ref.watch(userNameProvider)}!',
+                'Hello, ${user.name}!',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -134,7 +137,15 @@ class DashboardScreen extends ConsumerWidget {
                       child: RecipeCard(
                         recipe: recommendedRecipes[index],
                         onTap: () {
-                          // TODO: Navigate to recipe details
+                          // Navigate to recipe details when tapped
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RecipeDetailScreen(
+                                recipe: recommendedRecipes[index],
+                              ),
+                            ),
+                          );
                         },
                       ),
                     );

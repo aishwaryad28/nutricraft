@@ -17,6 +17,9 @@ class _AddFoodScreenState extends ConsumerState<AddFoodScreen> {
   final _foodNameController = TextEditingController();
   final _caloriesController = TextEditingController();
   final _servingSizeController = TextEditingController();
+  final _proteinController = TextEditingController(text: '0'); // Added protein controller
+  final _carbsController = TextEditingController(text: '0'); // Added carbs controller
+  final _fatsController = TextEditingController(text: '0'); // Added fats controller
   
   MealType _selectedMealType = MealType.breakfast;
   String _selectedServingUnit = 'g';
@@ -31,6 +34,9 @@ class _AddFoodScreenState extends ConsumerState<AddFoodScreen> {
     _foodNameController.dispose();
     _caloriesController.dispose();
     _servingSizeController.dispose();
+    _proteinController.dispose();
+    _carbsController.dispose();
+    _fatsController.dispose();
     super.dispose();
   }
   
@@ -71,9 +77,9 @@ class _AddFoodScreenState extends ConsumerState<AddFoodScreen> {
         servingUnit: _selectedServingUnit,
         mealType: _selectedMealType,
         dateTime: DateTime.now(),
-        protein: 0, // TODO: Add these fields to the form
-        carbs: 0,
-        fats: 0,
+        protein: int.parse(_proteinController.text),
+        carbs: int.parse(_carbsController.text),
+        fats: int.parse(_fatsController.text),
       );
       
       ref.read(foodLogProvider.notifier).addFoodLog(foodLog);
@@ -86,7 +92,7 @@ class _AddFoodScreenState extends ConsumerState<AddFoodScreen> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.9,
       decoration: BoxDecoration(
-        color: AppColors.softMint,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
@@ -97,7 +103,7 @@ class _AddFoodScreenState extends ConsumerState<AddFoodScreen> {
             width: 40,
             height: 5,
             decoration: BoxDecoration(
-              color: AppColors.charcoalGray.withOpacity(0.3),
+              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3),
               borderRadius: BorderRadius.circular(2.5),
             ),
           ),
@@ -148,9 +154,9 @@ class _AddFoodScreenState extends ConsumerState<AddFoodScreen> {
                 backgroundColor: MaterialStateProperty.resolveWith<Color>(
                   (Set<MaterialState> states) {
                     if (states.contains(MaterialState.selected)) {
-                      return AppColors.pastelPeach;
+                      return Theme.of(context).colorScheme.primary;
                     }
-                    return AppColors.white;
+                    return Theme.of(context).cardTheme.color ?? Colors.white;
                   },
                 ),
               ),
@@ -181,11 +187,13 @@ class _AddFoodScreenState extends ConsumerState<AddFoodScreen> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: _isVoiceInputActive ? AppColors.pastelPeach : AppColors.white,
+                    color: _isVoiceInputActive 
+                        ? Theme.of(context).colorScheme.primary 
+                        : Theme.of(context).cardTheme.color,
                     borderRadius: BorderRadius.circular(40),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.pastelPeach.withOpacity(0.3),
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                         blurRadius: 10,
                         spreadRadius: 2,
                       ),
@@ -194,7 +202,9 @@ class _AddFoodScreenState extends ConsumerState<AddFoodScreen> {
                   child: Icon(
                     _isVoiceInputActive ? Icons.mic : Icons.mic_none,
                     size: 40,
-                    color: _isVoiceInputActive ? AppColors.white : AppColors.pastelPeach,
+                    color: _isVoiceInputActive 
+                        ? Theme.of(context).colorScheme.onPrimary 
+                        : Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
@@ -206,7 +216,7 @@ class _AddFoodScreenState extends ConsumerState<AddFoodScreen> {
                   child: Text(
                     'Listening...',
                     style: TextStyle(
-                      color: AppColors.pastelPeach,
+                      color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -321,6 +331,81 @@ class _AddFoodScreenState extends ConsumerState<AddFoodScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 24),
+            
+            // Macronutrients
+            Text(
+              'Macronutrients',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Protein
+            TextFormField(
+              controller: _proteinController,
+              decoration: const InputDecoration(
+                labelText: 'Protein',
+                hintText: 'e.g., 20',
+                prefixIcon: Icon(Icons.fitness_center),
+                suffixText: 'g',
+              ),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter protein amount';
+                }
+                if (int.tryParse(value) == null) {
+                  return 'Please enter a valid number';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            
+            // Carbs
+            TextFormField(
+              controller: _carbsController,
+              decoration: const InputDecoration(
+                labelText: 'Carbohydrates',
+                hintText: 'e.g., 30',
+                prefixIcon: Icon(Icons.grain),
+                suffixText: 'g',
+              ),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter carbs amount';
+                }
+                if (int.tryParse(value) == null) {
+                  return 'Please enter a valid number';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            
+            // Fats
+            TextFormField(
+              controller: _fatsController,
+              decoration: const InputDecoration(
+                labelText: 'Fats',
+                hintText: 'e.g., 10',
+                prefixIcon: Icon(Icons.opacity),
+                suffixText: 'g',
+              ),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter fats amount';
+                }
+                if (int.tryParse(value) == null) {
+                  return 'Please enter a valid number';
+                }
+                return null;
+              },
+            ),
             const SizedBox(height: 32),
             
             // Submit button
@@ -359,7 +444,7 @@ class _AddFoodScreenState extends ConsumerState<AddFoodScreen> {
                 borderSide: BorderSide.none,
               ),
               filled: true,
-              fillColor: AppColors.white,
+              fillColor: Theme.of(context).cardTheme.color,
             ),
             onChanged: _searchFood,
           ),
@@ -458,7 +543,7 @@ class _AddFoodScreenState extends ConsumerState<AddFoodScreen> {
   Widget _buildRecentSearchChip(String label) {
     return Chip(
       label: Text(label),
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).cardTheme.color,
       side: BorderSide.none,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -485,13 +570,51 @@ class _AddFoodScreenState extends ConsumerState<AddFoodScreen> {
             Text(
               calories,
               style: TextStyle(
-                color: AppColors.charcoalGray.withOpacity(0.7),
+                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
               ),
             ),
             IconButton(
               icon: const Icon(Icons.add_circle_outline),
               onPressed: () {
-                // TODO: Quick add this food
+                // Quick add this food with predefined macros
+                _foodNameController.text = foodName;
+                _caloriesController.text = calories.split(' ')[0];
+                
+                // Set default macros based on the food
+                if (foodName == 'Oatmeal with Berries') {
+                  _proteinController.text = '10';
+                  _carbsController.text = '50';
+                  _fatsController.text = '8';
+                } else if (foodName == 'Grilled Chicken Salad') {
+                  _proteinController.text = '35';
+                  _carbsController.text = '20';
+                  _fatsController.text = '15';
+                } else if (foodName == 'Greek Yogurt with Honey') {
+                  _proteinController.text = '15';
+                  _carbsController.text = '25';
+                  _fatsController.text = '2';
+                } else if (foodName == 'Salmon with Vegetables') {
+                  _proteinController.text = '40';
+                  _carbsController.text = '30';
+                  _fatsController.text = '25';
+                }
+                
+                _servingSizeController.text = '1';
+                _selectedServingUnit = 'serving';
+                
+                // Set meal type based on the meal
+                if (mealType == 'Breakfast') {
+                  _selectedMealType = MealType.breakfast;
+                } else if (mealType == 'Lunch') {
+                  _selectedMealType = MealType.lunch;
+                } else if (mealType == 'Snack') {
+                  _selectedMealType = MealType.snack;
+                } else if (mealType == 'Dinner') {
+                  _selectedMealType = MealType.dinner;
+                }
+                
+                // Add the food log
+                _addFoodLog();
               },
             ),
           ],

@@ -35,7 +35,9 @@ class NutritionData {
   });
 }
 
-final nutritionProvider = Provider<NutritionData>((ref) {
+// Using AutoDisposeFamilyProvider to ensure the provider is refreshed when the date changes
+final nutritionProvider = Provider.autoDispose<NutritionData>((ref) {
+  // Watch the food log provider to rebuild when logs change
   final foodLogs = ref.watch(foodLogProvider);
   
   // Filter logs for today

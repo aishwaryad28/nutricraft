@@ -87,6 +87,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         achievements: ref.read(userProvider).achievements,
       );
       
+      // Update the user in the provider
       ref.read(userProvider.notifier).updateUser(updatedUser);
       
       Navigator.pop(context);

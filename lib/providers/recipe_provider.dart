@@ -36,7 +36,4 @@ final recommendedRecipesProvider = Provider<List<Recipe>>((ref) {
   return allRecipes.take(5).toList();
 });
 
-// Mock data for user name
-final userNameProvider = Provider<String>((ref) {
-  return 'Alex';
-});
+// Removed the mock userNameProvider since we're now using the real user provider
